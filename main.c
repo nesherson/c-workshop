@@ -66,7 +66,7 @@ void InsertDataAtEnd(struct Node **node, int data)
 
 void InsertDataAtPosition(struct Node** head, int data, int position)
 {
-    if (GetLength(head) < position)
+    if (GetLength(head) <= position)
     {
         return;
     }
@@ -91,6 +91,19 @@ void InsertDataAtPosition(struct Node** head, int data, int position)
     };
 }
 
+void DeleteDataAtBeginning(struct Node** head)
+{
+    struct Node *currentNode = (*head);
+    struct Node *nextNode = (*head)->next;
+
+    free(currentNode);
+    currentNode = NULL;
+    nextNode->prev = NULL;
+    (*head) = nextNode;
+}
+
+// 0 1 2 3 4 5 6
+
 void PrintNodes(struct Node **head)
 {
     struct Node *currentNode = (*head);
@@ -101,7 +114,7 @@ void PrintNodes(struct Node **head)
         printf("Node %d. ", counter++);
         printf(" %d\n", currentNode->data);
         currentNode = currentNode->next;
-    };
+    }; 
 }
 
 void FreeNodesFromMemory(struct Node **node)
@@ -126,6 +139,11 @@ void FreeNodesFromMemory(struct Node **node)
 
 struct Node *GetNode(struct Node **node, int data)
 {
+    if ((*node) == NULL)
+    {
+        return NULL;
+    }
+
     if ((*node)->data == data)
     {
         return (*node);
@@ -136,7 +154,6 @@ struct Node *GetNode(struct Node **node, int data)
 
 
 //TODO:
-// Add deletion at beginning
 // Add deletion at end
 // Add deletion at certain position
 
@@ -146,13 +163,15 @@ int main()
     struct Node *testNode = CreateNode(5);
     InsertDataAtEnd(&testNode, 7);
     InsertDataAtEnd(&testNode, 2);
-    InsertDataAtEnd(&testNode, 10);
-    InsertDataAtEnd(&testNode, 15);
-    InsertDataAtBeginning(&testNode, 100);
-    InsertDataAtPosition(&testNode, 150, 2);
+    // InsertDataAtEnd(&testNode, 10);
+    // InsertDataAtEnd(&testNode, 15);
+    // InsertDataAtBeginning(&testNode, 100);
+    // InsertDataAtPosition(&testNode, 150, 2);
 
     struct Node *searchedNode = GetNode(&testNode, 10);
     int nodeLength = GetLength(&testNode);
+
+    DeleteDataAtBeginning(&testNode);
 
     PrintNodes(&testNode);
     printf("Node length -> %d\n", nodeLength);
