@@ -64,7 +64,7 @@ void InsertDataAtEnd(struct Node **node, int data)
     }
 }
 
-void InsertDataAtPosition(struct Node** head, int data, int position)
+void InsertDataAtPosition(struct Node **head, int data, int position)
 {
     if (GetLength(head) <= position)
     {
@@ -91,7 +91,7 @@ void InsertDataAtPosition(struct Node** head, int data, int position)
     };
 }
 
-void DeleteDataAtBeginning(struct Node** head)
+void DeleteDataAtBeginning(struct Node **head)
 {
     struct Node *currentNode = (*head);
     struct Node *nextNode = (*head)->next;
@@ -102,7 +102,46 @@ void DeleteDataAtBeginning(struct Node** head)
     (*head) = nextNode;
 }
 
-// 0 1 2 3 4 5 6
+void DeleteDataAtEnd(struct Node **head)
+{
+    struct Node *currentNode = (*head);
+
+    while (currentNode->next != NULL)
+    {
+        currentNode = currentNode->next;
+    }
+
+    struct Node *previousNode = currentNode->prev;
+
+    free(currentNode);
+    currentNode = NULL;
+    previousNode->next = NULL;
+}
+
+void DeleteDataAtPosition(struct Node **head, int position)
+{
+    struct Node *currentNode = (*head);
+    int counter = 0;
+
+    while (currentNode != NULL)
+    {
+        if (counter == position)
+        {
+            struct Node *prevNode = currentNode->prev;
+            struct Node *nextNode = currentNode->next;
+
+            prevNode->next = nextNode;
+            nextNode->prev = prevNode;
+            free(currentNode);
+            currentNode = NULL;
+
+            break;
+        }
+
+        currentNode = currentNode->next;
+        counter++;
+    };
+}
 
 void PrintNodes(struct Node **head)
 {
@@ -114,7 +153,7 @@ void PrintNodes(struct Node **head)
         printf("Node %d. ", counter++);
         printf(" %d\n", currentNode->data);
         currentNode = currentNode->next;
-    }; 
+    };
 }
 
 void FreeNodesFromMemory(struct Node **node)
@@ -152,29 +191,23 @@ struct Node *GetNode(struct Node **node, int data)
     return GetNode(&(*node)->next, data);
 }
 
-
-//TODO:
-// Add deletion at end
-// Add deletion at certain position
-
-
 int main()
 {
     struct Node *testNode = CreateNode(5);
     InsertDataAtEnd(&testNode, 7);
     InsertDataAtEnd(&testNode, 2);
-    // InsertDataAtEnd(&testNode, 10);
-    // InsertDataAtEnd(&testNode, 15);
+    InsertDataAtEnd(&testNode, 10);
+    InsertDataAtEnd(&testNode, 15);
     // InsertDataAtBeginning(&testNode, 100);
     // InsertDataAtPosition(&testNode, 150, 2);
 
     struct Node *searchedNode = GetNode(&testNode, 10);
-    int nodeLength = GetLength(&testNode);
 
-    DeleteDataAtBeginning(&testNode);
+    // DeleteDataAtEnd(&testNode);
+    DeleteDataAtPosition(&testNode, 2);
 
     PrintNodes(&testNode);
-    printf("Node length -> %d\n", nodeLength);
+    printf("Node length -> %d\n", GetLength(&testNode));
     FreeNodesFromMemory(&testNode);
 
     return 0;
