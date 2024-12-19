@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct TestNode
+struct Node
 {
     int data;
-    struct TestNode *next;
-    struct TestNode *prev;
+    struct Node *next;
+    struct Node *prev;
 };
 
-struct TestNode *CreateNode(int data)
+struct Node *CreateNode(int data)
 {
-    struct TestNode *node = (struct TestNode *)malloc(sizeof(struct TestNode));
+    struct Node *node = (struct Node *)malloc(sizeof(struct Node));
     node->data = data;
     node->prev = NULL;
     node->next = NULL;
@@ -18,28 +18,44 @@ struct TestNode *CreateNode(int data)
     return node;
 }
 
-void InsertDataAtBeginning(struct TestNode **node, int data)
+int GetLength(struct Node **head)
 {
-    if (node == NULL)
+    int length = 0;
+    struct Node *currentNode = (*head);
+
+    while (currentNode != NULL)
     {
-        (*node) = CreateNode(data);
+        length++;
+        currentNode = currentNode->next;
+    };
+
+    return length;
+}
+
+void InsertDataAtBeginning(struct Node **head, int data)
+{
+    if (head == NULL)
+    {
+        (*head) = CreateNode(data);
     }
     else
     {
-        struct TestNode *newNode = CreateNode(data);
-        newNode->next = (*node);
-        (*node)->prev = newNode;
-        (*node) = newNode;
+        struct Node *newNode = CreateNode(data);
+        newNode->next = (*head);
+        (*head)->prev = newNode;
+        (*head) = newNode;
     }
 }
 
-void InsertDataAtEnd(struct TestNode **node, int data)
+void InsertDataAtEnd(struct Node **node, int data)
 {
-    struct TestNode *newNode = CreateNode(data);
+    struct Node *newNode = CreateNode(data);
 
     if ((*node)->next == NULL)
     {
         (*node)->next = newNode;
+        newNode->prev = (*node);
+
         return;
     }
     else
@@ -48,9 +64,36 @@ void InsertDataAtEnd(struct TestNode **node, int data)
     }
 }
 
-void PrintNodes(struct TestNode **node)
+void InsertDataAtPosition(struct Node** head, int data, int position)
 {
-    struct TestNode *currentNode = (*node);
+    if (GetLength(head) < position)
+    {
+        return;
+    }
+
+    struct Node *currentNode = (*head);
+    struct Node *newNode = CreateNode(data);
+    int counter = 0;
+
+    while (currentNode != NULL)
+    {
+        if (counter == position)
+        {
+            newNode->prev = currentNode->prev;
+            newNode->next = currentNode;
+            currentNode->prev->next = newNode;
+            currentNode->prev = newNode;
+            break;
+        }
+
+        currentNode = currentNode->next;
+        counter++;
+    };
+}
+
+void PrintNodes(struct Node **head)
+{
+    struct Node *currentNode = (*head);
     int counter = 1;
 
     while (currentNode != NULL)
@@ -61,13 +104,13 @@ void PrintNodes(struct TestNode **node)
     };
 }
 
-void DeleteNodes(struct TestNode **node)
+void FreeNodesFromMemory(struct Node **node)
 {
-    struct TestNode **currentNode = node;
+    struct Node **currentNode = node;
 
     while (currentNode != NULL)
     {
-        struct TestNode *nextNode = (*currentNode)->next;
+        struct Node *nextNode = (*currentNode)->next;
 
         free(currentNode);
         currentNode = NULL;
@@ -81,7 +124,7 @@ void DeleteNodes(struct TestNode **node)
     printf("Nodes cleared!\n");
 }
 
-struct TestNode *GetNode(struct TestNode** node, int data)
+struct Node *GetNode(struct Node **node, int data)
 {
     if ((*node)->data == data)
     {
@@ -91,21 +134,29 @@ struct TestNode *GetNode(struct TestNode** node, int data)
     return GetNode(&(*node)->next, data);
 }
 
+
+//TODO:
+// Add deletion at beginning
+// Add deletion at end
+// Add deletion at certain position
+
+
 int main()
 {
-    struct TestNode *testNode = CreateNode(5);
-
-    InsertDataAtBeginning(&testNode, 3);
+    struct Node *testNode = CreateNode(5);
     InsertDataAtEnd(&testNode, 7);
     InsertDataAtEnd(&testNode, 2);
     InsertDataAtEnd(&testNode, 10);
     InsertDataAtEnd(&testNode, 15);
     InsertDataAtBeginning(&testNode, 100);
+    InsertDataAtPosition(&testNode, 150, 2);
 
-    struct TestNode* searchedNode = GetNode(&testNode, 10);
+    struct Node *searchedNode = GetNode(&testNode, 10);
+    int nodeLength = GetLength(&testNode);
 
     PrintNodes(&testNode);
-    DeleteNodes(&testNode);
+    printf("Node length -> %d\n", nodeLength);
+    FreeNodesFromMemory(&testNode);
 
     return 0;
 }
